@@ -117,16 +117,19 @@
 
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
-BLE_spi_DEF(m_spi);                                                            /**< Custom service instance. */
+BLE_CUS_DEF(m_spi);                                                            /**< Custom service instance. */
 
 APP_TIMER_DEF(m_notification_timer_id);
 static uint8_t m_custom_value = 0;
 
 
-
-
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
+/* YOUR_JOB: Declare all services structure your application is using
+ *  BLE_XYZ_DEF(m_xyz);
+ */
+
+// YOUR_JOB: Use UUIDs for service(s) used in your application.
 static ble_uuid_t m_adv_uuids[] =                                               /**< Universally unique service identifiers. */
 {
     {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}
@@ -253,6 +256,51 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
     }
 }
 
+/**@brief Function for handling the Battery measurement timer timeout.
+ *
+ * @details This function will be called each time the battery level measurement timer expires.
+ *
+ * @param[in] p_context  Pointer used for passing some arbitrary information (context) from the
+ *                       app_start_timer() call to the timeout handler.
+ */
+static void notification_timeout_handler(void * p_context)
+{
+    UNUSED_PARAMETER(p_context);
+    ret_code_t err_code;
+    
+    // Increment the value of m_custom_value before nortifing it.
+    m_custom_value++;
+    
+    err_code = ble_spi_custom_value_update(&m_spi, m_custom_value);
+    APP_ERROR_CHECK(err_code);
+}
+
+
+/**@brief Function for the Timer initialization.
+ *
+ * @details Initializes the timer module. This creates and starts application timers.
+ */
+static void timers_init(void)
+{
+    // Initialize timer module.
+    ret_code_t err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
+
+    // Create timers.
+    err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler);
+    APP_ERROR_CHECK(err_code);
+
+    // Create timers.
+
+    /* YOUR_JOB: Create any timers to be used by the application.
+                 Below is an example of how to create a timer.
+                 For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
+                 one.
+       ret_code_t err_code;
+       err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
+       APP_ERROR_CHECK(err_code); */
+}
+
 
 /**@brief Function for the GAP initialization.
  *
@@ -297,6 +345,31 @@ static void gatt_init(void)
 }
 
 
+/**@brief Function for handling the YYY Service events.
+ * YOUR_JOB implement a service handler function depending on the event the service you are using can generate
+ *
+ * @details This function will be called for all YY Service events which are passed to
+ *          the application.
+ *
+ * @param[in]   p_yy_service   YY Service structure.
+ * @param[in]   p_evt          Event received from the YY Service.
+ *
+ *
+static void on_yys_evt(ble_yy_service_t     * p_yy_service,
+                       ble_yy_service_evt_t * p_evt)
+{
+    switch (p_evt->evt_type)
+    {
+        case BLE_YY_NAME_EVT_WRITE:
+            APPL_LOG("[APPL]: charact written with value %s. ", p_evt->params.char_xx.value.p_str);
+            break;
+
+        default:
+            // No implementation needed.
+            break;
+    }
+}
+*/
 /**@brief Function for handling the Custom Service Service events.
  *
  * @details This function will be called for all Custom Service events which are passed to
@@ -312,20 +385,20 @@ static void on_spi_evt(ble_spi_t     * p_spi_service,
     ret_code_t err_code;
     switch(p_evt->evt_type)
     {
-        case BLE_spi_EVT_NOTIFICATION_ENABLED:
+        case BLE_CUS_EVT_NOTIFICATION_ENABLED:
             err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
             APP_ERROR_CHECK(err_code);
             break;
 
-        case BLE_spi_EVT_NOTIFICATION_DISABLED:
+        case BLE_CUS_EVT_NOTIFICATION_DISABLED:
             err_code = app_timer_stop(m_notification_timer_id);
             APP_ERROR_CHECK(err_code);
             break;
 
-        case BLE_spi_EVT_CONNECTED :
+        case BLE_CUS_EVT_CONNECTED :
             break;
 
-        case BLE_spi_EVT_DISCONNECTED:
+        case BLE_CUS_EVT_DISCONNECTED:
             break;
 
         default:
@@ -340,10 +413,34 @@ static void on_spi_evt(ble_spi_t     * p_spi_service,
  */
 static void services_init(void)
 {
+    /* YOUR_JOB: Add code to initialize the services used by the application.
+       ret_code_t                         err_code;
+       ble_xxs_init_t                     xxs_init;
+       ble_yys_init_t                     yys_init;
+
+       // Initialize XXX Service.
+       memset(&xxs_init, 0, sizeof(xxs_init));
+
+       xxs_init.evt_handler                = NULL;
+       xxs_init.is_xxx_notify_supported    = true;
+       xxs_init.ble_xx_initial_value.level = 100;
+
+       err_code = ble_bas_init(&m_xxs, &xxs_init);
+       APP_ERROR_CHECK(err_code);
+
+       // Initialize YYY Service.
+       memset(&yys_init, 0, sizeof(yys_init));
+       yys_init.evt_handler                  = on_yys_evt;
+       yys_init.ble_yy_initial_value.counter = 0;
+
+       err_code = ble_yy_service_init(&yys_init, &yy_init);
+       APP_ERROR_CHECK(err_code);
+     */
+
     ret_code_t                         err_code;
     ble_spi_init_t                     spi_init;
 
-     // Initialize spi Service init structure to zero.
+     // Initialize CUS Service init structure to zero.
     memset(&spi_init, 0, sizeof(spi_init));
     spi_init.evt_handler = on_spi_evt;
     
@@ -410,6 +507,17 @@ static void conn_params_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
+
+/**@brief Function for starting timers.
+ */
+static void application_timers_start(void)
+{
+    /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
+       ret_code_t err_code;
+       err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
+       APP_ERROR_CHECK(err_code); */
+
+}
 
 
 /**@brief Function for putting the chip into sleep mode.
@@ -757,8 +865,7 @@ static void advertising_start(bool erase_bonds)
  */
 int main(void)
 {
-
-    // Enable the constant latency sub power mode to minimize the time it takes
+// Enable the constant latency sub power mode to minimize the time it takes
     // for the SPIS peripheral to become active after the CSN line is asserted
     // (when the CPU is in sleep mode).
     NRF_POWER->TASKS_CONSTLAT = 1;
@@ -766,6 +873,7 @@ int main(void)
 
     // Initialize.
     log_init();
+    timers_init();
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
     gap_params_init();
@@ -775,6 +883,10 @@ int main(void)
     
     conn_params_init();
     peer_manager_init();
+
+    // Start execution.
+    NRF_LOG_INFO("Template example started.");
+    application_timers_start();
 
     advertising_start(erase_bonds);
 

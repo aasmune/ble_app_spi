@@ -90,7 +90,7 @@
 // <4294967295=> Not connected 
 
 #ifndef APP_SPIS_SCK_PIN
-#define APP_SPIS_SCK_PIN 3
+#define APP_SPIS_SCK_PIN 4
 #endif
 
 // <o> APP_SPIS_MISO_PIN  - Pin number
@@ -130,7 +130,7 @@
 // <4294967295=> Not connected 
 
 #ifndef APP_SPIS_MISO_PIN
-#define APP_SPIS_MISO_PIN 28
+#define APP_SPIS_MISO_PIN 29
 #endif
 
 // <o> APP_SPIS_MOSI_PIN  - Pin number
@@ -170,7 +170,7 @@
 // <4294967295=> Not connected 
 
 #ifndef APP_SPIS_MOSI_PIN
-#define APP_SPIS_MOSI_PIN 4
+#define APP_SPIS_MOSI_PIN 28
 #endif
 
 // <o> APP_SPIS_CS_PIN  - Pin number
@@ -210,7 +210,7 @@
 // <4294967295=> Not connected 
 
 #ifndef APP_SPIS_CS_PIN
-#define APP_SPIS_CS_PIN 29
+#define APP_SPIS_CS_PIN 30
 #endif
 
 // <o> APP_SPIS_IRQ_PRIORITY  - Interrupt priority
@@ -1356,7 +1356,7 @@
 // <7=> 7 
 
 #ifndef SPIS_DEFAULT_CONFIG_IRQ_PRIORITY
-#define SPIS_DEFAULT_CONFIG_IRQ_PRIORITY 7
+#define SPIS_DEFAULT_CONFIG_IRQ_PRIORITY 3
 #endif
 
 // <o> SPIS_DEFAULT_MODE  - Mode
@@ -1397,14 +1397,14 @@
  
 
 #ifndef SPIS0_ENABLED
-#define SPIS0_ENABLED 0
+#define SPIS0_ENABLED 1
 #endif
 
 // <q> SPIS1_ENABLED  - Enable SPIS1 instance
  
 
 #ifndef SPIS1_ENABLED
-#define SPIS1_ENABLED 1
+#define SPIS1_ENABLED 0
 #endif
 
 // <q> SPIS2_ENABLED  - Enable SPIS2 instance
@@ -1425,7 +1425,7 @@
 // <i> enabled as well.
 
 #ifndef SPIS_NRF52_ANOMALY_109_WORKAROUND_ENABLED
-#define SPIS_NRF52_ANOMALY_109_WORKAROUND_ENABLED 0
+#define SPIS_NRF52_ANOMALY_109_WORKAROUND_ENABLED 1
 #endif
 
 // </e>
@@ -5189,7 +5189,7 @@
 // <e> SPI1_ENABLED - Enable SPI1 instance
 //==========================================================
 #ifndef SPI1_ENABLED
-#define SPI1_ENABLED 0
+#define SPI1_ENABLED 1
 #endif
 // <q> SPI1_USE_EASY_DMA  - Use EasyDMA
  

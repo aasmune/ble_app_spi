@@ -1,5 +1,5 @@
-#ifndef BLE_spi_H
-#define BLE_spi_H
+#ifndef BLE_CUS_H
+#define BLE_CUS_H
 
 //Custom UUID
 //0b0d8fa6-4bd3-4efd-95a2-54b3696d7026
@@ -14,7 +14,7 @@
  * @param   _name   Name of the instance.
  * @hideinitializer
  */
-#define BLE_spi_DEF(_name)                                                                          \
+#define BLE_CUS_DEF(_name)                                                                          \
 static ble_spi_t _name;                                                                             \
 NRF_SDH_BLE_OBSERVER(_name ## _obs,                                                                 \
                      BLE_HRS_BLE_OBSERVER_PRIO,                                                     \
@@ -31,10 +31,10 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                                             
 /**@brief Custom Service event type. */
 typedef enum
 {
-    BLE_spi_EVT_NOTIFICATION_ENABLED,                             /**< Custom value notification enabled event. */
-    BLE_spi_EVT_NOTIFICATION_DISABLED,                            /**< Custom value notification disabled event. */
-    BLE_spi_EVT_DISCONNECTED,
-    BLE_spi_EVT_CONNECTED
+    BLE_CUS_EVT_NOTIFICATION_ENABLED,                             /**< Custom value notification enabled event. */
+    BLE_CUS_EVT_NOTIFICATION_DISABLED,                            /**< Custom value notification disabled event. */
+    BLE_CUS_EVT_DISCONNECTED,
+    BLE_CUS_EVT_CONNECTED
 } ble_spi_evt_type_t;
 
 /**@brief Custom Service event. */
@@ -121,12 +121,5 @@ void ble_spi_on_ble_evt( ble_evt_t const * p_ble_evt, void * p_context);
  */
 
 uint32_t ble_spi_custom_value_update(ble_spi_t * p_spi, uint8_t custom_value);
-
-/**@brief Function for handling the Write event.
- *
- * @param[in]   p_cus       Custom Service structure.
- * @param[in]   p_ble_evt   Event received from the BLE stack.
- */
-static void on_write(ble_spi_t * p_spi, ble_evt_t const * p_ble_evt);
 
 #endif

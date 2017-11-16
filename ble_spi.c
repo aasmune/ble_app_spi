@@ -10,21 +10,16 @@
 #include "app_error.h"
 #include "nrf_drv_spis.h"
 
-#define SPIS_INSTANCE 1 /**< SPIS instance index. */
+#define SPIS_INSTANCE 0 /**< SPIS instance index. */
 static const nrf_drv_spis_t spis = NRF_DRV_SPIS_INSTANCE(SPIS_INSTANCE);/**< SPIS instance. */
 
-static uint8_t       m_tx_buf[1];                         /**< TX buffer. */
+static uint8_t       m_tx_buf[2] = {0, 0};                         /**< TX buffer. */
 static uint8_t       m_rx_buf[2];                        /**< RX buffer. */
 static const uint8_t m_tx_length = sizeof(m_tx_buf);        /**< Transfer length. */
 static const uint8_t m_rx_length = sizeof(m_rx_buf);        /**< Receive length. */
 
 static volatile bool spis_xfer_done; /**< Flag used to indicate that SPIS instance completed the transfer. */
 
-/**
- * @brief SPIS user event handler.
- *
- * @param event
- */
 void spis_event_handler(nrf_drv_spis_event_t event)
 {
     if (event.evt_type == NRF_DRV_SPIS_XFER_DONE)
@@ -32,7 +27,6 @@ void spis_event_handler(nrf_drv_spis_event_t event)
         spis_xfer_done = true;
     }
 }
-
 
 uint32_t ble_spi_init(ble_spi_t * p_spi, const ble_spi_init_t * p_spi_init)
 {
@@ -69,10 +63,12 @@ uint32_t ble_spi_init(ble_spi_t * p_spi, const ble_spi_init_t * p_spi_init)
     spis_config.miso_pin              = APP_SPIS_MISO_PIN;
     spis_config.mosi_pin              = APP_SPIS_MOSI_PIN;
     spis_config.sck_pin               = APP_SPIS_SCK_PIN;
-  
+
     // Initialize the tx buffer
     m_tx_buf[0] = 0;
+    spis_xfer_done = true;
     err_code = nrf_drv_spis_init(&spis, &spis_config, spis_event_handler);
+    err_code = nrf_drv_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length);
     if (err_code != NRF_SUCCESS)
     {
         return err_code;
@@ -159,7 +155,7 @@ static void on_connect(ble_spi_t * p_spi, ble_evt_t const * p_ble_evt)
     p_spi->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
     ble_spi_evt_t evt;
 
-    evt.evt_type = BLE_spi_EVT_CONNECTED;
+    evt.evt_type = BLE_CUS_EVT_CONNECTED;
 
     p_spi->evt_handler(p_spi, &evt);
 
@@ -176,21 +172,19 @@ static void on_disconnect(ble_spi_t * p_spi, ble_evt_t const * p_ble_evt)
     p_spi->conn_handle = BLE_CONN_HANDLE_INVALID;
 }
 
-/**@brief Function for handling the Write event.
- *
- * @param[in]   p_cus       Custom Service structure.
- * @param[in]   p_ble_evt   Event received from the BLE stack.
- */
 static void on_write(ble_spi_t * p_spi, ble_evt_t const * p_ble_evt)
 {
-    ret_code_t err_code;
+ret_code_t err_code;
+
     ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
     
+
     // Check if the handle passed with the event matches the Custom Value Characteristic handle.
     if (p_evt_write->handle == p_spi->custom_value_handles.value_handle && spis_xfer_done)
     {
         spis_xfer_done = false;
-        //err_code = nrf_drv_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length);
+        m_tx_buf[0] = p_evt_write->data[0];
+        err_code = nrf_drv_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length);
         APP_ERROR_CHECK(err_code);
         // Put specific task here. 
         nrf_gpio_pin_toggle(LED_4);
@@ -224,4 +218,52 @@ void ble_spi_on_ble_evt( ble_evt_t const * p_ble_evt, void * p_context)
             // No implementation needed.
             break;
     }
+}
+
+uint32_t ble_spi_custom_value_update(ble_spi_t * p_spi, uint8_t custom_value){
+    if (p_spi == NULL)
+    {
+        return NRF_ERROR_NULL;
+    }
+
+    uint32_t err_code = NRF_SUCCESS;
+    ble_gatts_value_t gatts_value;
+
+    // Initialize value struct.
+    memset(&gatts_value, 0, sizeof(gatts_value));
+
+    gatts_value.len     = sizeof(uint8_t);
+    gatts_value.offset  = 0;
+    gatts_value.p_value = &custom_value;
+
+    // Update database.
+    err_code = sd_ble_gatts_value_set(p_spi->conn_handle,
+                                        p_spi->custom_value_handles.value_handle,
+                                        &gatts_value);
+    if (err_code != NRF_SUCCESS)
+    {
+        return err_code;
+    }
+
+    // Send value if connected and notifying.
+    if ((p_spi->conn_handle != BLE_CONN_HANDLE_INVALID)) 
+    {
+        ble_gatts_hvx_params_t hvx_params;
+
+        memset(&hvx_params, 0, sizeof(hvx_params));
+
+        hvx_params.handle = p_spi->custom_value_handles.value_handle;
+        hvx_params.type   = BLE_GATT_HVX_NOTIFICATION;
+        hvx_params.offset = gatts_value.offset;
+        hvx_params.p_len  = &gatts_value.len;
+        hvx_params.p_data = gatts_value.p_value;
+
+        err_code = sd_ble_gatts_hvx(p_spi->conn_handle, &hvx_params);
+    }
+    else
+    {
+        err_code = NRF_ERROR_INVALID_STATE;
+    }
+
+    return err_code;
 }

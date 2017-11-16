@@ -36,11 +36,11 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="36" y="762" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../main.c" debugPath="../../../main.c" selected="0" top="733" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="48" y="104" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../ble_spi.h" debugPath="../../../ble_spi.h" selected="0" top="15" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="5" y="61" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../ble_spi.c" debugPath="../../../ble_spi.c" selected="1" top="54" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="13" y="3679" useTextEdit="1" useBinaryEdit="0" left="0" path="../config/sdk_config.h" debugPath="../config/sdk_config.h" selected="0" top="307" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/drivers_nrf/spi_slave/nrf_drv_spis.h" debugPath="../../../../../../components/drivers_nrf/spi_slave/nrf_drv_spis.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="744" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../main.c" debugPath="../../../main.c" selected="1" top="733" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="186" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../ble_spi.c" debugPath="../../../ble_spi.c" selected="0" top="165" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="49" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../ble_spi.h" debugPath="../../../ble_spi.h" selected="0" top="33" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="349" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/softdevice/s132/headers/ble_gatts.h" debugPath="../../../../../../components/softdevice/s132/headers/ble_gatts.h" selected="0" top="330" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="28" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../../../../.segger/SEGGER Embedded Studio/v3/tools.xml" debugPath="../../../../../../../../../.segger/SEGGER Embedded Studio/v3/tools.xml" selected="0" top="0" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="ble_app_template_pca10040_s132" fileDialogDefaultFilter="*.h" autoConnectTarget="J-Link" buildConfiguration="Debug" debugSearchFileMap="" fileDialogInitialDirectory="/home/aasmune/Documents/NordicSemi/nRF5_SDK_14.1.0_1dda907/components/drivers_nrf/spi_slave" debugSearchPath="" autoConnectCapabilities="3711"/>
+ <ARMCrossStudioWindow activeProject="ble_app_template_pca10040_s132" fileDialogDefaultFilter="*.h" autoConnectTarget="J-Link" buildConfiguration="Debug" debugSearchFileMap="" fileDialogInitialDirectory="/home/aasmune/Documents/NordicSemi/nRF5_SDK_14.1.0_1dda907/components/drivers_nrf/spi_slave" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>
